@@ -53,6 +53,9 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'user_type'=> 'required',
+            'picture' =>'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'approved' => ''
         ]);
     }
 
@@ -64,10 +67,32 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        $users=User::all();
+        $user = new User();
+        $user->name =  $data['name'];
+        $user->email =  $data['email'];
+        if($users->count()==0)
+        {
+            $user_type = 'Admin';
+            $user->user_type =  $user_type;
+            $user->approved =  'Yes';
+        }else
+        {
+            $user->user_type =  $data['user_type'];
+            $user->approved =  $data['approved'];
+        }
+        $user->password =  Hash::make($data['password']);
+        if(request('picture') != NULL){
+            $fileName_s = $data['name'].request('user_type');;
+            $fileName = $fileName_s.'.'.$data['picture']->extension(); 
+            $data['picture']->move(public_path('images/user'), $fileName);
+            
+        }else
+        {
+            $fileName ='avatar.PNG';
+        }
+        $user->picture = $fileName;
+        $user->save();
+        
     }
 }

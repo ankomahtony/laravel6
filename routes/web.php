@@ -11,12 +11,31 @@
 |
 */
 
-Route::get('/',function (){
-    return view('welcome');
-});
+use App\Question;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
-Route::get('/posts/{post}', 'PostsController@show');
+// use Illuminate\Routing\Route;
 
-Route::get('/testing/{text}', 'TestController@show');
+// Route::get('/exam',function ($id){
+//     $exam_qtns = Question::where('exam_id',$id)->paginate(1);
+//     return view('exam', ['page_title'=>'Social Studies Examination','exam_qtns'=>$exam_qtns]);
+// });
 
-Route::get('/blogs/{blog}', 'BlogsController@show');
+Auth::routes();
+
+Route::get('/students/action', 'StudentController@action')->name('student_action');
+Route::get('/exams/action', 'ExamController@action')->name('exam_action');
+Route::get('/options/opt_action', 'OptionController@opt_action')->name('opt_action');
+Route::get('/students/exams', 'StudentController@exam');
+Route::get('/', 'Controller@index');
+
+Route::resource('students','StudentController');
+Route::resource('exams','ExamController');
+Route::resource('questions','QuestionController');
+Route::resource('options','OptionController');
+Route::resource('regions','RegionController');
+Route::resource('results','ResultController');
+Route::resource('tests','TestController');
+Route::resource('districts','DistrictController');
+Route::resource('std_classes','ClassController');
